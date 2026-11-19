@@ -1,0 +1,26 @@
+name: Daftarlarni tekshirish
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "17 3 1 * *"   # har oyning 1-kuni: kutubxonalar yangilanganda ham kodlar ishlashini tekshirish
+  workflow_dispatch:
+
+jobs:
+  bajarish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Kutubxonalarni o'rnatish
+        run: |
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -r requirements.txt nbformat nbclient ipykernel
+          python -m ipykernel install --user --name python3
+      - name: Daftarlarni ishga tushirish
+        run: python tekshiruv/bajarish.py
